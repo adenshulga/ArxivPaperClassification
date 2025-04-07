@@ -7,14 +7,6 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    fish \
-    git \
-    curl \
-    vim \
-    bash \
-    ffmpeg \
-    tmux \
-    unzip \
     build-essential \
     python3-dev && \
     rm -rf /var/lib/apt/lists/*
@@ -38,16 +30,14 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Switch to the new user
 USER appuser
 
-# SHELL ["/usr/bin/fish", "-c"]
-
 WORKDIR /app
 
-# COPY --chown=appuser:appgroup . /app
+COPY --chown=appuser:appgroup . /app
 
-# RUN uv venv .venv
+RUN uv venv .venv
 
-# RUN uv sync
+RUN uv sync
 
-# EXPOSE 7860
+EXPOSE 7860
 
-# CMD scripts/launch_app.sh
+CMD scripts/launch_app.sh

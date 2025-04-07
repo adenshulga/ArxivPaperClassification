@@ -3,8 +3,6 @@ import typing as tp
 from config.inference_config import InferenceConfig
 import streamlit as st
 
-from src.app.tags_mapping import tags2full_name
-
 
 class LabelScore(tp.TypedDict):
     label: str
@@ -14,7 +12,9 @@ class LabelScore(tp.TypedDict):
 @st.cache_resource
 def setup_pipeline(cfg: InferenceConfig) -> Pipeline:
     model = pipeline(
-        "text-classification", model=cfg.checkpoint_path, tokenizer=cfg.model_name
+        "text-classification",
+        model=cfg.checkpoint_path,
+        tokenizer=cfg.model_name,
     )
     return model
 
