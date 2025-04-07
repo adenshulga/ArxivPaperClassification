@@ -42,12 +42,10 @@ WORKDIR /app
 
 COPY --chown=appuser:appgroup . /app
 
-# 1) Create a dedicated venv in .venv
 RUN uv venv .venv
 
-# 2) Install / sync packages into that .venv
 RUN uv sync
 
-EXPOSE 8000
+EXPOSE 9000
 
-CMD ["uv", "run", "python", "entrypoints/app.py"]
+# CMD ["uv", "run", "python", "entrypoints/app.py"]

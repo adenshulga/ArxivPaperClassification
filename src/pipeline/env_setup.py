@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import torch
 
 REQUIRED_ENV_VARS = ["COMET_API_KEY", "COMET_MODE"]
 

@@ -17,5 +17,6 @@ add .env with COMET_API_KEY, COMET_MODE=GET
 chmod +x on scripts
 
 
+add data to folder data
 
-
+specify cuda device in pipeline script

@@ -16,13 +16,13 @@ class DatasetConfig:
 class CustomTrainingArguments:
     output_dir: str = "data/checkpoints"
     overwrite_output_dir: bool = True
-    num_train_epochs: float = 10
+    num_train_epochs: float = 3
     learning_rate: float = 5e-5
     lr_scheduler_type: str = "cosine"
     # lr_scheduler_kwargs={},
     warmup_ratio: float = 0.03125
-    warmup_steps: int = 10
-    # per_device_train_batch_size: int = 32
+    warmup_steps: int = 1
+    # per_device_train_batch_size: int = 64
     gradient_accumulation_steps: int = 1
     log_level: str = "error"
     # logging_dir="output_dir/runs/CURRENT_DATETIME_HOSTNAME"  # логи для tensorboard (default)
@@ -46,13 +46,21 @@ class CustomTrainingArguments:
     # resume_from_checkpoint: str = "last-checkpoint"
     auto_find_batch_size: bool = True
     report_to: str = "comet_ml"
+    metric_for_best_model: str = "f1"
+    greater_is_better: bool = True
 
 
 @dataclass
 class ModelConfig:
     """Configuration for model architecture and parameters"""
 
-    model_name: str = "bert-base-uncased"
+    model_name: str = "allenai/scibert_scivocab_uncased"
+
+    # model_name: tp.Literal[
+    #     "FacebookAI/roberta-base",
+    #     "distilbert-base-uncased",
+    #     "allenai/scibert_scivocab_uncased",
+    # ] = "allenai/scibert_scivocab_uncased"
 
 
 @dataclass

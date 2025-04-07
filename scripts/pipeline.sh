@@ -4,4 +4,4 @@ export PYTHONPATH='.'
 
 source .venv/bin/activate
 
-python entrypoints/pipeline.py 
+CUDA_VISIBLE_DEVICES=0 uv run entrypoints/pipeline.py 

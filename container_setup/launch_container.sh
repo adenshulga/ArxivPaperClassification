@@ -11,6 +11,7 @@ docker run \
     --rm \
     -it \
     --init \
+	--gpus '"device=0,1,2"' \
     -v ${SRC}:/app \
     -p ${INNER_PORT}:${CONTAINER_PORT} \
     ${DOCKER_NAME} \

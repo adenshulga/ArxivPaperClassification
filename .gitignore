@@ -8,6 +8,9 @@ wheels/
 
 outputs
 
+notebooks
+
+
 data
 NOTES.md
 .env

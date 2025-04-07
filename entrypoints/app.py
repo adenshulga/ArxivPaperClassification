@@ -1,60 +1,27 @@
-# import streamlit as st
+import streamlit as st
+from src.app.setup_model import setup_pipeline, get_top_label_names, LabelScore
+from src.app.tags_mapping import tags2full_name
+from src.app.visualization import visualize_predicted_categories
+from config.inference_config import InferenceConfig
+from src.app.data_validation import validate_data
 
-# st.title("This is a title")
-# st.header("This is a header")
-# st.subheader("This is a subheader")
-# st.text("This is a text")
-# st.markdown("# This is a markdown header 1")
-# st.markdown("## This is a markdown header 2")
-# st.markdown("### This is a markdown header 3")
-# st.markdown("This is a markdown: *bold* **italic** `inline code` ~strikethrough~")
-# st.markdown("""This is a code block with syntax highlighting
-# ```python
-# print("Hello world!")
-# ```
-# """)
-# st.html(
-#     "image from url example with html: "
-#     "<img src='https://www.wallpaperflare.com/static/450/825/286/kitten-cute-animals-grass-5k-wallpaper.jpg' width=400px>",
-# )
+st.title("arXiv Paper Classifier")
+st.markdown("Enter paper details to predict arXiv categories")
 
+st.text_input("Enter paper name", key="paper_name")
+st.text_area("Enter paper abstract", key="paper_abstract", height=250)
 
-# st.write("Text with write")
-# st.write(range(10))
+if st.button("Predict Categories", type="primary"):
+    validate_data(st.session_state["paper_name"], st.session_state["paper_abstract"])
+    with st.spinner("Analyzing paper..."):
+        pipeline = setup_pipeline(InferenceConfig())
+        scores: list[LabelScore] = pipeline(
+            st.session_state["paper_name"] + " " + st.session_state["paper_abstract"],
+            output_scores=True,
+        )  # type: ignore
 
-# st.success("Success")
-# st.info("Information")
-# st.warning("Warning")
-# st.error("Error")
-# exp = ZeroDivisionError("Trying to divide by Zero")
-# st.exception(exp)
+        top_labels = get_top_label_names(scores, tags2full_name, 0.95)
 
-# # инициализируем переменные
-# st.session_state.key1 = "value1"  # Attribute API
-# st.session_state["key2"] = "value2"  # Dictionary like API
-
-# # посмотреть что в st.session_state
-# st.write(st.session_state)
-
-# # magic
-# st.session_state
-
-# # ошибка если неправильный ключ
-# # st.write(st.session_state["missing_key"])
-
-# import streamlit as st
-# from transformers import pipeline
-
-
-# @st.cache_resource  # кэширование
-# def load_model():
-#     return pipeline("sentiment-analysis")  # скачивание модели
-
-
-# model = load_model()
-
-# query = st.text_input("Your query", value="I love Streamlit! 🎈")
-# if query:
-#     result = model(query)[0]  # классифицируем
-#     st.write(query)
-#     st.write(result)
+    visualize_predicted_categories(top_labels, scores, tags2full_name)
+else:
+    st.info("Enter paper details and click 'Predict Categories' to get predictions.")

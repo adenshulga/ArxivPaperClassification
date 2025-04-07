@@ -1,7 +1,11 @@
-import evaluate
 import numpy as np
-
-clf_metrics = evaluate.combine(["accuracy", "f1", "precision", "recall"])
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 
 
 def sigmoid(x):
@@ -10,8 +14,27 @@ def sigmoid(x):
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
-    predictions = sigmoid(predictions)
-    predictions = (predictions > 0.5).astype(int).reshape(-1)
-    return clf_metrics.compute(
-        predictions=predictions, references=labels.astype(int).reshape(-1)
+
+    # Handle T5 model output which can be a tuple
+    if isinstance(predictions, tuple):
+        predictions = predictions[0]
+
+    prediction_scores = sigmoid(predictions)
+    predictions = (prediction_scores > 0.5).astype(int)
+
+    # Multi-label metrics
+    accuracy = accuracy_score(labels, predictions)
+    roc_auc = roc_auc_score(labels, prediction_scores)
+    f1 = f1_score(labels, predictions, average="weighted", zero_division=0)
+    precision = precision_score(
+        labels, predictions, average="weighted", zero_division=0
     )
+    recall = recall_score(labels, predictions, average="weighted", zero_division=0)
+
+    return {
+        "accuracy": accuracy,
+        "f1": f1,
+        "precision": precision,
+        "recall": recall,
+        "roc_auc": roc_auc,
+    }

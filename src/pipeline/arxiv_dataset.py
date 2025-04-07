@@ -22,7 +22,7 @@ class ArxivPaper(tp.TypedDict):
 
 
 def load_arxiv_dataset() -> Dataset:
-    df = pd.read_json("data/arxivData.json").head(100)
+    df = pd.read_json("data/arxivData.json")
     dataset = Dataset.from_pandas(df[["summary", "tag", "title"]])
     return dataset
 
@@ -51,6 +51,7 @@ def generate_preprocessing_function(
             text,
             truncation=True,
             padding="max_length",
+            max_length=512,
         )
 
         tags_list: list[ArxivTag] = ast.literal_eval(row["tag"])
