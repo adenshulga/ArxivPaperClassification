@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,25 +14,9 @@ RUN apt-get update && \
     tmux \
     unzip \
     build-essential \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+    python3-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-# pkg-config \
-# cmake \
-
-# cargo \
-# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-#     source $HOME/.cargo/env && \
-#     rustup default stable
-
-# RUN rustup install stable && rustup default stable
-
-# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-#     source $HOME/.cargo/env && \
-#     rustup default stable
-
-
-# Declare build arguments before using them
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
@@ -40,11 +24,12 @@ ARG GROUP_ID=1000
 RUN addgroup --gid $GROUP_ID appgroup && \
     adduser --uid $USER_ID --gid $GROUP_ID --shell /bin/bash --disabled-password --gecos "" appuser
 
-# Install sudo
-RUN apt-get update && apt-get install -y sudo
+# Install sudo and grant privileges
+RUN apt-get update && apt-get install -y sudo && \
+    echo "appuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Grant sudo privileges to appuser without a password
-RUN echo "appuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# Create /app directory with proper ownership
+RUN mkdir -p /app && chown -R appuser:appgroup /app
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
@@ -54,19 +39,15 @@ USER appuser
 SHELL ["/usr/bin/fish", "-c"]
 
 WORKDIR /app
-# Create the virtual environment in a directory not affected by the mount
-# Copy requirements.txt and install dependencies
-# COPY --chown=appuser:appgroup requirements.txt ./
-# RUN uv venv && uv pip install --upgrade pip && \
-#     uv pip install -r requirements.txt
 
+COPY --chown=appuser:appgroup . /app
 
-# Copy the entire project into the container
-COPY --chown=appuser:appgroup pyproject.toml ./
-COPY --chown=appuser:appgroup uv.lock ./
+# 1) Create a dedicated venv in .venv
+RUN uv venv .venv
 
+# 2) Install / sync packages into that .venv
 RUN uv sync
 
 EXPOSE 8000
 
-# CMD is now managed by docker-compose to run the Fish shell
+CMD ["uv", "run", "python", "entrypoints/app.py"]
