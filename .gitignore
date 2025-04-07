@@ -11,7 +11,7 @@ outputs
 notebooks
 
 
-data
+# data
 NOTES.md
 .env
 
