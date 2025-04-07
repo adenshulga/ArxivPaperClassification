@@ -1,3 +1,12 @@
+---
+title: Arxiv Paper Classifier
+emoji: 🌍
+colorFrom: purple
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # arXiv Paper Classification
 
 A machine learning application that predicts arXiv categories for academic papers based on their title and abstract. This tool uses a fine-tuned SciBERT model to classify papers into arXiv subject categories. This task is completed as homework for YSDA ML 2 course
