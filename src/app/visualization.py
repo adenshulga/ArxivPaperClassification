@@ -7,6 +7,7 @@ def visualize_predicted_categories(
     top_labels: list[LabelScore],
     scores: list[LabelScore],
     label_to_name_mapping: Dict[str, str],
+    minimal_score: float = 0.01,
 ):
     """
     Visualize the predicted categories in a streamlit app
@@ -19,7 +20,9 @@ def visualize_predicted_categories(
     st.subheader("Predicted Categories")
 
     for i, label in enumerate(top_labels):
-        score = next((s["score"] for s in scores if s["label"] == label["label"]), 0)
+        score = label["score"]
+        if score < minimal_score:
+            continue
 
         # Color gradient based on confidence
         color_intensity = min(int(score * 255), 255)
